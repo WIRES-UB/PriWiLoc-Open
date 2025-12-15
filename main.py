@@ -2,19 +2,19 @@
 
 Usage:
     # Use default configuration
-    python main_hydra.py
+    python main.py
     
     # Override specific parameters
-    python main_hydra.py experiment.max_epochs=200 dataset.batch_size=32
+    python main.py experiment.max_epochs=200 dataset.batch_size=32
     
     # Use a different logger
-    python main_hydra.py logger=tensorboard
-    python main_hydra.py logger=wandb
-    python main_hydra.py logger=csv
-    python main_hydra.py logger=none  # No logging
+    python main.py logger=tensorboard
+    python main.py logger=wandb
+    python main.py logger=csv
+    python main.py logger=none  # No logging
     
     # Run hyperparameter sweep
-    python main_hydra.py -m experiment.learning_rate=1e-4,5e-5,1e-5
+    python main.py -m experiment.learning_rate=1e-4,5e-5,1e-5
 """
 
 import logging
