@@ -1,0 +1,17 @@
+# @package _global_
+dataset:
+  batch_size: 16
+  num_workers: 8
+  prefetch_factor: 2
+  sequence_length: 20
+  
+  # Data paths - UPDATE THESE TO YOUR DATA LOCATIONS
+  train_data_path: "/home/csgrad/tahsinfu/Dloc/DLoc/dloc_v2/filepath/train_gen_J28n2.csv"
+  val_data_path: "/home/csgrad/tahsinfu/Dloc/DLoc/dloc_v2/filepath/test_gen_J28n2.csv"
+  test_data_path: "/home/csgrad/tahsinfu/Dloc/DLoc/dloc_v2/filepath/test_gen_J28n2.csv"
+  
+  # Number of access points
+  train_n_aps: 4
+  val_n_aps: 4
+  test_n_aps: 4
+

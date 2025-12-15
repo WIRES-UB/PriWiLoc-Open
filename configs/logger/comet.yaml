@@ -1,0 +1,21 @@
+# @package _global_
+logger:
+  name: "comet"
+  project_name: "priwiloc"
+  save_dir: "./logs"
+  
+  # Comet-specific settings
+  # API key and workspace are read from environment variables:
+  # - COMET_API_KEY
+  # - COMET_WORKSPACE
+  
+  # Optional: log model checkpoints
+  log_model: true
+  log_code: false
+  log_graph: false
+  log_git_metadata: true
+  log_git_patch: false
+  
+  # Log hyperparameters
+  log_hyperparams: true
+

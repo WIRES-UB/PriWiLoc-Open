@@ -1,0 +1,12 @@
+# @package _global_
+logger:
+  name: "tensorboard"
+  save_dir: "./logs"
+  
+  # TensorBoard-specific settings
+  default_hp_metric: true
+  log_graph: false
+  
+  # Log hyperparameters
+  log_hyperparams: true
+

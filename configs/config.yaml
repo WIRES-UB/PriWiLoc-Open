@@ -1,0 +1,25 @@
+# Main configuration file for PriWiLoc training
+# Override any parameter from command line: python main.py dataset.batch_size=32
+
+defaults:
+  - dataset: default
+  - model: default
+  - trainer: default
+  - logger: comet
+  - _self_
+
+# Experiment settings
+experiment:
+  name: "priwiloc_experiment"
+  seed: 42
+  max_epochs: 100
+  learning_rate: 5e-5
+
+# Hydra settings
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}
+

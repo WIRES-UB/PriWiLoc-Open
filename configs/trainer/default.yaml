@@ -1,0 +1,24 @@
+# @package _global_
+trainer:
+  accelerator: "gpu"
+  devices: [1]
+  strategy: "ddp_find_unused_parameters_true"
+  log_every_n_steps: 50
+  
+  # Callbacks
+  checkpoint:
+    monitor: "val_loss"
+    mode: "min"
+    save_top_k: 1
+    filename: "{epoch:02d}"
+  
+  early_stopping:
+    monitor: "val_loss"
+    patience: 5
+    mode: "min"
+    verbose: true
+  
+  visualization:
+    max_visualization_samples: 10
+    display_viz_data_epoch_interval: 1
+

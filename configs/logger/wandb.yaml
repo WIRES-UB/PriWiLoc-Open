@@ -1,0 +1,17 @@
+# @package _global_
+logger:
+  name: "wandb"
+  project_name: "priwiloc"
+  save_dir: "./logs"
+  
+  # WandB-specific settings
+  # API key is read from environment variable: WANDB_API_KEY
+  # or from ~/.netrc file
+  
+  entity: null  # Set to your wandb username/team
+  log_model: false  # Set to true to log model checkpoints
+  offline: false  # Set to true for offline mode
+  
+  # Log hyperparameters
+  log_hyperparams: true
+

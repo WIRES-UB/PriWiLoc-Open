@@ -1,0 +1,11 @@
+# @package _global_
+model:
+  name: "FederatedLearningModel"
+  
+  # Federated learning specific
+  average_weight_every_n_batches: 10
+  
+  # Model architecture parameters
+  dropout: 0.3
+  in_channels: 1
+

@@ -1,0 +1,11 @@
+# @package _global_
+logger:
+  name: "csv"
+  save_dir: "./logs"
+  
+  # CSV Logger is simple and doesn't require any API keys
+  # Metrics will be saved to CSV files in save_dir
+  
+  # Log hyperparameters
+  log_hyperparams: true
+
