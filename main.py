@@ -31,7 +31,7 @@ from callbacks.visualization_callback import AoAVisualizationCallback
 from data_module import DLocDataModule
 from dataset import DLocDatasetV2
 from models.federated_learning import FederatedLearningModel
-from utils.config_hydra import ExperimentConfig, config_to_legacy_format
+from utils.config_hydra import ExperimentConfig
 from utils.logger_factory import LoggerFactory
 from utils.data_utils import git_check
 from dotenv import load_dotenv
