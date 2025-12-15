@@ -3,7 +3,7 @@
 import torch
 
 from models.model import TrigAOAResNetModel
-from utils.config import ExperimentConfig
+from utils.config_hydra import ExperimentConfig
 
 BATCH_NORM_STATISTICS = ("running_mean", "running_var", "num_batches_tracked")
 
