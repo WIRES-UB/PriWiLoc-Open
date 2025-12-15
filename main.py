@@ -31,7 +31,7 @@ from callbacks.visualization_callback import AoAVisualizationCallback
 from data_module import DLocDataModule
 from dataset import DLocDatasetV2
 from models.federated_learning import FederatedLearningModel
-from utils.config_hydra import ExperimentConfig
+from utils.config_hydra import Config
 from utils.logger_factory import LoggerFactory
 from utils.data_utils import git_check
 from dotenv import load_dotenv
@@ -93,8 +93,9 @@ def main(cfg: DictConfig) -> None:
         logger.info("No logger configured")
     
     # Initialize model
+    
     model_cls = FederatedLearningModel
-    model = model_cls(experiment_config)
+    model = model_cls(cfg) 
     logger.info(f"Model initialized: {cfg.model.name}")
     
     # Create Data Module

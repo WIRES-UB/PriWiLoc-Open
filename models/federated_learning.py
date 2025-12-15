@@ -3,7 +3,7 @@
 import torch
 
 from models.model import TrigAOAResNetModel
-from utils.config_hydra import ExperimentConfig
+from utils.config_hydra import Config
 
 BATCH_NORM_STATISTICS = ("running_mean", "running_var", "num_batches_tracked")
 
@@ -13,7 +13,7 @@ class FederatedLearningModel(TrigAOAResNetModel):
     It implements federated learning specific functionalities.
     """
 
-    def __init__(self, config: ExperimentConfig):
+    def __init__(self, config: Config):
         super().__init__(config)
 
     def get_resnet_encoder_parameters(self) -> list[dict[str, torch.Tensor]]:
