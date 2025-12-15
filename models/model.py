@@ -19,7 +19,7 @@ from utils.schema import (
     LossTerms,
     ModelOutput,
 )
-from utils.config_hydra import Config as ExperimentConfig
+from utils.config_hydra import Config 
 
 
 # -----------------------------
@@ -91,7 +91,7 @@ class AoADecoder(nn.Module):
 # -----------------------------
 
 class TrigAOAResNetModel(pl.LightningModule):
-    def __init__(self, config: ExperimentConfig):
+    def __init__(self, config: Config):
         super().__init__()
         self.config = config
 
