@@ -157,7 +157,8 @@ class TrigAOAResNetModel(pl.LightningModule):
     def __init__(self, config: ExperimentConfig):
         super().__init__()
         self.config = config
-        self.lr = config.experiment.learning_rate
+        self.lr = config.learning_rate
+
 
 
         # Initialize metrics calculator
