@@ -19,7 +19,7 @@ from utils.schema import (
     LossTerms,
     ModelOutput,
 )
-from utils.config_hydra import ExperimentConfig
+from utils.config_hydra import Config as ExperimentConfig
 
 
 # -----------------------------
