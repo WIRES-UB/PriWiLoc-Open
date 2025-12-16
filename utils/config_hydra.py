@@ -4,7 +4,6 @@ This module provides configuration classes that work with Hydra for configuratio
 The original config.py is kept for backward compatibility.
 """
 
-import subprocess
 from dataclasses import dataclass, field
 from typing import Optional
 from omegaconf import MISSING
@@ -112,47 +111,6 @@ class ExperimentConfig:
     max_epochs: int = 100
     learning_rate: float = 5e-5
     
-    # Git metadata (auto-populated)
-    git_hash: Optional[str] = None
-    git_branch: Optional[str] = None
-    
-    def __post_init__(self):
-        """Populate git metadata after initialization."""
-        if self.git_hash is None:
-            self.git_hash = self.get_git_hash()
-        if self.git_branch is None:
-            self.git_branch = self.get_git_branch()
-    
-    @staticmethod
-    def get_git_hash() -> Optional[str]:
-        """Get current git commit hash."""
-        try:
-            return (
-                subprocess.check_output(
-                    ["git", "rev-parse", "HEAD"],
-                    stderr=subprocess.DEVNULL
-                )
-                .decode("utf-8")
-                .strip()
-            )
-        except Exception:
-            return None
-    
-    @staticmethod
-    def get_git_branch() -> Optional[str]:
-        """Get current git branch name."""
-        try:
-            return (
-                subprocess.check_output(
-                    ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-                    stderr=subprocess.DEVNULL,
-                )
-                .decode("utf-8")
-                .strip()
-            )
-        except Exception:
-            return None
-
 
 @dataclass
 class Config:

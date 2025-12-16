@@ -5,7 +5,7 @@ defaults:
   - dataset: default
   - model: default
   - trainer: default
-  - logger: comet
+  - logger: none
   - _self_
 
 # Experiment settings

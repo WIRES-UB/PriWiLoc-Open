@@ -1,6 +1,6 @@
 """Model definition and training and validation logic."""
 
-from typing import Any, Mapping, Tuple
+from typing import Tuple
 
 import pytorch_lightning as pl
 import torch
@@ -95,22 +95,21 @@ class TrigAOAResNetModel(pl.LightningModule):
         super().__init__()
         self.config = config
 
-        # ✅ flat config access
-        self.lr = config.learning_rate
+        self.lr = config.experiment.learning_rate
 
         # Metrics
         self.train_metrics = MetricCollection([
-            AoAAccuracy(n_aps=config.train_n_aps),
+            AoAAccuracy(n_aps=config.dataset.train_n_aps),
             LocationAccuracy(),
             RSSIMetric(),
         ])
         self.val_metrics = MetricCollection([
-            AoAAccuracy(n_aps=config.val_n_aps),
+            AoAAccuracy(n_aps=config.dataset.val_n_aps),
             LocationAccuracy(),
             RSSIMetric(),
         ])
         self.test_metrics = MetricCollection([
-            AoAAccuracy(n_aps=config.test_n_aps),
+            AoAAccuracy(n_aps=config.dataset.test_n_aps),
             LocationAccuracy(),
             RSSIMetric(),
         ])
@@ -118,10 +117,10 @@ class TrigAOAResNetModel(pl.LightningModule):
         # Encoders (one per AP)
         self.encoders = nn.ModuleList([
             ResNetEncoder(
-                in_channels=config.in_channels,
-                dropout=config.dropout,
+                in_channels=config.model.in_channels,
+                dropout=config.model.dropout,
             )
-            for _ in range(config.train_n_aps)
+            for _ in range(config.dataset.train_n_aps)
         ])
 
         self.decoder = AoADecoder(self.encoders[0].mlp_output_dim)
@@ -180,12 +179,34 @@ class TrigAOAResNetModel(pl.LightningModule):
             location=location,
         )
 
-    def _common_step(self, batch: DLocBatchDataSample, stage: str):
-        pred = self(batch.features_2d, batch.ap_metadata)
-        gt = get_batch_gt_label(batch)
-        loss: LossTerms = compute_geometric_loss(pred, gt)
-        self.log(f"{stage}_loss", loss.total_loss, prog_bar=True)
-        return pred, gt, loss
+    def _common_step(self, batch: DLocBatchDataSample, stage: str) -> Tuple[ModelOutput, GTlabel, LossTerms]:
+        assert stage in ["train", "val", "test"], "Stage must be one of 'train', 'val', or 'test'."
+
+        # Forward pass
+        model_pred: ModelOutput = self.forward(batch.features_2d, batch.ap_metadata)
+    
+        # Store AP metadata for visualization callback (use first sample's metadata)
+        ap_metadata_list = APMetadata.from_tensor(batch.ap_metadata)
+        self.ap_metadata = ap_metadata_list[0]
+
+        # construct ground truth label
+        gt_label: GTlabel = get_batch_gt_label(batch)
+
+        # Compute geometric loss (PriWiLoc paper: cos + sin + location)
+        loss_all: LossTerms = compute_geometric_loss(model_pred, gt_label)
+
+        # log the loss
+        self.log(f"{stage}_loss", loss_all.total_loss.item(), sync_dist=True)
+        
+        # Log individual loss components
+        if loss_all.cos_loss is not None:
+            self.log(f"{stage}_cos_loss", loss_all.cos_loss.item(), sync_dist=True)
+        if loss_all.sin_loss is not None:
+            self.log(f"{stage}_sin_loss", loss_all.sin_loss.item(), sync_dist=True)
+        if loss_all.location_loss is not None:
+            self.log(f"{stage}_location_loss", loss_all.location_loss.item(), sync_dist=True)
+
+        return model_pred, gt_label, loss_all
 
     def training_step(self, batch, batch_idx):
         pred, gt, loss = self._common_step(batch, "train")
@@ -198,10 +219,31 @@ class TrigAOAResNetModel(pl.LightningModule):
         self.val_metrics.update(pred, gt)
         self.val_metrics["RSSIMetric"].set_rssi(batch.rssi)
 
+        return {
+            "val_loss": loss.total_loss,
+            "model_pred": pred,
+            "gt_label": gt,
+        }
+
     def test_step(self, batch, batch_idx):
         pred, gt, loss = self._common_step(batch, "test")
         self.test_metrics.update(pred, gt)
         self.test_metrics["RSSIMetric"].set_rssi(batch.rssi)
+
+        return {
+            "test_loss": loss.total_loss,
+            "model_pred": pred,
+            "gt_label": gt,
+        }
+
+    def on_train_epoch_end(self):
+        self.train_metrics.reset()
+
+    def on_validation_epoch_end(self):
+        self.val_metrics.reset()
+
+    def on_test_epoch_end(self):
+        self.test_metrics.reset()
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr, weight_decay=5e-5)

@@ -14,12 +14,10 @@ from data_module import DLocDataModule
 from dataset import DLocDatasetV2
 from models.federated_learning import FederatedLearningModel
 from utils.logger_factory import LoggerFactory
-from utils.data_utils import git_check
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
-git_check()
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

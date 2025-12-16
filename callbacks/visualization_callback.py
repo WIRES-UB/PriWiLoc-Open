@@ -162,7 +162,8 @@ class AoAVisualizationCallback(Callback):
                     f"{stage}_aoa_error_rmse_ap{ap_index}_deg": torch.rad2deg(
                         metric_result[MetricNames.AOA_ERROR_RMSE_RADIAN][ap_index]
                     ).item(),
-                }
+                },
+                sync_dist=True,
             )
 
         # log location error metrics
@@ -171,7 +172,8 @@ class AoAVisualizationCallback(Callback):
                 f"{stage}_{name}": value
                 for name, value in metric_result.items()
                 if name.startswith("location_error") and "all" not in name
-            }
+            },
+            sync_dist=True,
         )
 
         # log location error cdf
@@ -215,6 +217,7 @@ class AoAVisualizationCallback(Callback):
             dataloader_idx: Index of the dataloader (default is 0).
         """
         if len(self.val_visualization_data) < self.max_visualization_samples:
+            # import ipdb; ipdb.set_trace()
             model_pred = outputs["model_pred"]
             gt_label = outputs["gt_label"]
             if batch.features_2d.dim() == 5:
