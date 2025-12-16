@@ -82,7 +82,7 @@ class FederatedLearningModel(TrigAOAResNetModel):
             batch: not used, but required by the PyTorch Lightning API.
             batch_idx: The index of the batch that just ended.
         """
-        if (batch_idx + 1) % self.config.average_weight_very_n_batches == 0:
+        if (batch_idx + 1) % self.config.model.average_weight_every_n_batches == 0:
             self.print(f"epoch: {self.trainer.current_epoch}, batch: {batch_idx}, averaging client weight")
             client_parameters = self.get_resnet_encoder_parameters()
             averaged_parameters = self.average_resnet_encoder_parameters(client_parameters)

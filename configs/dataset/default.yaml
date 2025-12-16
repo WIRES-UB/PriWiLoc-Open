@@ -6,10 +6,10 @@ dataset:
   sequence_length: 20
   
   # Data paths - UPDATE THESE TO YOUR DATA LOCATIONS
-  train_data_path: "/Users/kanis/DLoc_datasets/jacobs_July_100/all_files.csv"
-  val_data_path: "/Users/kanis/DLoc_datasets/jacobs_July_100/all_files.csv"
-  test_data_path: "/Users/kanis/DLoc_datasets/jacobs_July_100/all_files.csv"
-  
+  train_data_path: "/home/csgrad/tahsinfu/Dloc/DLoc/dloc_v2/filepath/train_gen_J28n2.csv"
+  val_data_path: "/home/csgrad/tahsinfu/Dloc/DLoc/dloc_v2/filepath/test_gen_J28n2.csv"
+  test_data_path: "/home/csgrad/tahsinfu/Dloc/DLoc/dloc_v2/filepath/test_gen_J28n2.csv"
+
   # Number of access points
   train_n_aps: 4
   val_n_aps: 4
