@@ -1,24 +1,6 @@
-"""Script for training, validation, and testing of the model using Hydra configuration.
-
-Usage:
-    # Use default configuration
-    python main.py
-    
-    # Override specific parameters
-    python main.py experiment.max_epochs=200 dataset.batch_size=32
-    
-    # Use a different logger
-    python main.py logger=tensorboard
-    python main.py logger=wandb
-    python main.py logger=csv
-    python main.py logger=none  # No logging
-    
-    # Run hyperparameter sweep
-    python main.py -m experiment.learning_rate=1e-4,5e-5,1e-5
-"""
+"""Script for training, validation, and testing of the model using Hydra configuration."""
 
 import logging
-import os
 from datetime import datetime
 
 import hydra
@@ -31,7 +13,6 @@ from callbacks.visualization_callback import AoAVisualizationCallback
 from data_module import DLocDataModule
 from dataset import DLocDatasetV2
 from models.federated_learning import FederatedLearningModel
-from utils.config_hydra import ExperimentConfig
 from utils.logger_factory import LoggerFactory
 from utils.data_utils import git_check
 from dotenv import load_dotenv
@@ -56,13 +37,6 @@ def main(cfg: DictConfig) -> None:
     logger.info("Configuration:")
     logger.info(OmegaConf.to_yaml(cfg))
 
-    experiment_config = ExperimentConfig(
-        name=cfg.experiment.name,
-        seed=cfg.experiment.seed,
-        max_epochs=cfg.experiment.max_epochs,
-        learning_rate=cfg.experiment.learning_rate,
-    )
-    
     # Set random seed for reproducibility
     pl.seed_everything(cfg.experiment.seed)
     
@@ -70,7 +44,6 @@ def main(cfg: DictConfig) -> None:
     device_name = f"gpu_{torch.cuda.current_device()}" if torch.cuda.is_available() else "cpu"
     timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
     experiment_name = f"{timestamp}:{device_name}:{cfg.experiment.name}"
-    
     logger.info(f"Experiment name: {experiment_name}")
     
     # Create logger
@@ -78,10 +51,8 @@ def main(cfg: DictConfig) -> None:
     
     if pl_logger is not None:
         logger.info(f"Using logger: {cfg.logger.name}")
-        
         # Log hyperparameters
         LoggerFactory.log_hyperparameters(pl_logger, cfg)
-        
         # Log dataset files
         LoggerFactory.log_dataset_files(
             pl_logger,
@@ -94,7 +65,7 @@ def main(cfg: DictConfig) -> None:
     
     # Initialize model
     model_cls = FederatedLearningModel
-    model = model_cls(experiment_config)
+    model = model_cls(cfg)  # Pass the full root config
     logger.info(f"Model initialized: {cfg.model.name}")
     
     # Create Data Module
@@ -169,7 +140,7 @@ def main(cfg: DictConfig) -> None:
     # Load best model
     best_model = model_cls.load_from_checkpoint(
         best_model_path,
-        config=experiment_config,
+        config=cfg,  # pass full config here
     )
     logger.info("Best model loaded")
     
@@ -183,4 +154,3 @@ def main(cfg: DictConfig) -> None:
 
 if __name__ == "__main__":
     main()
-
