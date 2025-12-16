@@ -115,7 +115,7 @@ class TrigAOAResNetModel(pl.LightningModule):
         ])
 
         # Encoders (one per AP)
-        self.encoders = nn.ModuleList([
+        self.resnet_encoder_list= nn.ModuleList([
             ResNetEncoder(
                 in_channels=config.model.in_channels,
                 dropout=config.model.dropout,
@@ -123,7 +123,7 @@ class TrigAOAResNetModel(pl.LightningModule):
             for _ in range(config.dataset.train_n_aps)
         ])
 
-        self.decoder = AoADecoder(self.encoders[0].mlp_output_dim)
+        self.decoder = AoADecoder(self.resnet_encoder_list[0].mlp_output_dim)
 
     def forward(self, x: torch.Tensor, ap_metadata: torch.Tensor) -> ModelOutput:
         ap_meta_list = APMetadata.from_tensor(ap_metadata)
@@ -133,8 +133,8 @@ class TrigAOAResNetModel(pl.LightningModule):
         conf_preds = torch.zeros(B, N, device=self.device)
 
         for i in range(N):
-            enc_idx = min(i, len(self.encoders) - 1)
-            feat = self.encoders[enc_idx](x[:, i].unsqueeze(1))
+            enc_idx = min(i, len(self.resnet_encoder_list) - 1)
+            feat = self.resnet_encoder_list[enc_idx](x[:, i].unsqueeze(1))
             out = self.decoder(feat)
 
             aoa_preds[:, i] = out.aoa.squeeze(1) * torch.pi / 2
