@@ -1,6 +1,6 @@
 """Model definition and training and validation logic."""
 
-from typing import Any, Mapping, Optional, Dict, Tuple
+from typing import Any, Mapping, Tuple
 
 import pytorch_lightning as pl
 import torch
@@ -8,16 +8,16 @@ import torch.nn as nn
 from torchmetrics import MetricCollection
 from torchvision.models import resnet34
 from metrics_calculator import AoAAccuracy, LocationAccuracy, RSSIMetric
-from models.model_utils import compute_direct_aoa_loss, compute_geometric_loss, get_batch_gt_label
-from utils.config import ExperimentConfig
+from models.model_utils import compute_geometric_loss, get_batch_gt_label
+from utils.config_hydra import ExperimentConfig
 from utils.geometry_utils import cos_angle_diff, sin_angle_diff
-from utils.ray_intersection_solver import solve_2d_ray_intersection, solve_ray_intersection_batch
+from utils.ray_intersection_solver import solve_ray_intersection_batch
 from utils.schema import (
     APMetadata,
     DLocBatchDataSample,
     GTlabel,
     LossTerms,
-    ModelOutput,
+    ModelOutput,    
 )
 
 class QuadraticActivation(nn.Module):
