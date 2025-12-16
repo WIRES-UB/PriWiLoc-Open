@@ -1,0 +1,13 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Lightning logs
+lightning_logs/
+
+# Output directories
+outputs/
+
+.DS_Store
+
