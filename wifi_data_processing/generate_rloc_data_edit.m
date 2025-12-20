@@ -1,11 +1,9 @@
 clearvars
-addpath("/home/csgrad/tahsinfu/Dloc/DLoc/wifi_data_processing/utils")
-
-
+addpath("utils/")
 
 % === Configuration ===
-DATA_SAVE_TOP = "/home/csgrad/tahsinfu/Dloc/RLoc/processed_datasets_full_new_lab";
-RLOC_DATA_PATH = "/home/csgrad/tahsinfu/Dloc/RLoc/human_held_device_wifi_indoor_localization_dataset";
+DATA_SAVE_TOP = ""; % location to save the data
+RLOC_DATA_PATH = ""; % location to the RLoc data
 
 if ~exist(DATA_SAVE_TOP, 'dir')
     mkdir(DATA_SAVE_TOP);

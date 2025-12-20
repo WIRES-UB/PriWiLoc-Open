@@ -69,7 +69,7 @@ function [channels, RSSI, labels, opt, ap_locations, ap_angles, grid] = extractC
 
 
     % Extract AP angle offsets
-    ap_angles = data.ap_aoa;    
+    ap_angles = deg2rad(data.ap_aoa);    
     
     % Extract grid information
     grid.x = [min(labels(:, 1)), max(labels(:, 1))];

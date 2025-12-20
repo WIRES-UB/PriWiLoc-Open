@@ -2,10 +2,12 @@
 data_names = {'July16','July18','July18_different_APsHeight','July22_1_ref','July22_2_ref','jacobs_July28','jacobs_July28_2','jacobs_Aug16_1','jacobs_Aug16_2','jacobs_Aug16_3','jacobs_Aug16_4_ref','jacobs_aug28_2'};
 ant_sep = 0.0259;
 disp(dataset_number)
+channels_location = ""; % location to the channels data
+
 
 switch dataset_number
     case 1
-        file_loc  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{1}];
+        file_loc  = [channels_location, 'channels_',data_names{1}];
         file_loc1 = file_loc;
         ap{1} = [0,2.5+1.5*ant_sep;...
             0,2.5+0.5*ant_sep;...
@@ -29,7 +31,7 @@ switch dataset_number
         d1 = 0:0.1:8;
         d2 = 0:0.1:5;
     case 2
-        file_loc  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{2}];
+        file_loc  = [channels_location, 'channels_',data_names{2}];
         file_loc1 = file_loc;
         ap{1} = [0,2.5+1.5*ant_sep;...
             0,2.5+0.5*ant_sep;...
@@ -53,7 +55,7 @@ switch dataset_number
         d1 = 0:0.1:8;
         d2 = 0:0.1:5;
     case 3
-        file_loc  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{3}];
+        file_loc  = [channels_location, 'channels_',data_names{3}];
         file_loc1 = file_loc;
         ap{1} = [0,2.5+1.5*ant_sep;...
             0,2.5+0.5*ant_sep;...
@@ -77,7 +79,7 @@ switch dataset_number
         d1 = 0:0.1:8;
         d2 = 0:0.1:5;
     case 4
-        file_loc  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{4}];
+        file_loc  = [channels_location, 'channels_',data_names{4}];
         file_loc1 = file_loc;
         ap{1} = [0,2.5+1.5*ant_sep;...
             0,2.5+0.5*ant_sep;...
@@ -101,7 +103,7 @@ switch dataset_number
         d1 = 0:0.1:8;
         d2 = 0:0.1:5;
     case 5
-        file_loc  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{5}];
+        file_loc  = [channels_location, 'channels_',data_names{5}];
         file_loc1 = file_loc;
         ap{1} = [0,2.5+1.5*ant_sep;...
             0,2.5+0.5*ant_sep;...
@@ -125,7 +127,7 @@ switch dataset_number
         d1 = 0:0.1:8;
         d2 = 0:0.1:5;
     case 6
-        file_loc  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{6}];
+        file_loc  = [channels_location, 'channels_',data_names{6}];
         file_loc1 = file_loc;
         ap{1} = [0,2+1.5*ant_sep;...
             0,2+0.5*ant_sep;...
@@ -149,7 +151,7 @@ switch dataset_number
         d1 = 0:0.1:17;
         d2 = 0:0.1:8;
     case 7
-        file_loc  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{7}];
+        file_loc  = [channels_location, 'channels_',data_names{7}];
         file_loc1 = file_loc;
         ap{1} = [0,2+1.5*ant_sep;...
             0,2+0.5*ant_sep;...
@@ -173,8 +175,8 @@ switch dataset_number
         d1 = 0:0.1:17;
         d2 = 0:0.1:8;
     case 8
-        file_loc  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{8}];
-        file_loc1 = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{8}];
+        file_loc  = [channels_location, 'channels_',data_names{8}];
+        file_loc1 = [channels_location, 'channels_',data_names{8}];
         ap{1} = [0,2+1.5*ant_sep;...
             0,2+0.5*ant_sep;...
             0,2-0.5*ant_sep;...
@@ -197,8 +199,8 @@ switch dataset_number
         d1 = 0:0.1:17;
         d2 = 0:0.1:8;
     case 9
-        file_loc  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{9}];
-        file_loc1 = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{8}];
+        file_loc  = [channels_location, 'channels_',data_names{9}];
+        file_loc1 = [channels_location, 'channels_',data_names{8}];
         ap{1} = [0,2+1.5*ant_sep;...
             0,2+0.5*ant_sep;...
             0,2-0.5*ant_sep;...
@@ -221,8 +223,8 @@ switch dataset_number
         d1 = 0:0.1:17;
         d2 = 0:0.1:8;
     case 10
-        file_loc  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{10}];
-        file_loc1 = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{8}];
+        file_loc  = [channels_location, 'channels_',data_names{10}];
+        file_loc1 = [channels_location, 'channels_',data_names{8}];
         ap{1} = [0,2+1.5*ant_sep;...
             0,2+0.5*ant_sep;...
             0,2-0.5*ant_sep;...
@@ -245,8 +247,8 @@ switch dataset_number
         d1 = 0:0.1:17;
         d2 = 0:0.1:8;
     case 11
-        file_loc  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{11}];
-        file_loc1 = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{8}];
+        file_loc  = [channels_location, 'channels_',data_names{11}];
+        file_loc1 = [channels_location, 'channels_',data_names{8}];
         ap{1} = [0,2+1.5*ant_sep;...
             0,2+0.5*ant_sep;...
             0,2-0.5*ant_sep;...
@@ -270,8 +272,8 @@ switch dataset_number
         d2 = 0:0.1:8;
         
     case 12
-        file_loc  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{12}];
-        file_loc1  = ['/home/tahsin/Downloads/DLoc_code/channels_release/channels_',data_names{12}];
+        file_loc  = [channels_location, 'channels_',data_names{12}];
+        file_loc1  = [channels_location, 'channels_',data_names{12}];
         ap{1} = [0,2;...
             0,2+4*ant_sep;...
             -5*ant_sep,2+4*ant_sep;...

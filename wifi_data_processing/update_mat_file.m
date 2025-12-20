@@ -1,5 +1,5 @@
-dataset = "jacobs_Aug16_1";
-filename = fullfile("/home/csgrad/tahsinfu/Data/channels_release", "channels_" + dataset + ".mat");
+dataset = ""; % dataset name
+filename = fullfile("FILL OUT THE PATH TO THE CHANNELS DATA", "channels_" + dataset + ".mat"); % location to the channels data
 
 % Load the data
 data = load(filename);

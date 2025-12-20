@@ -1,6 +1,6 @@
 # PriWiLoc-Open
 
-A PyTorch Lightning-based deep learning framework for WiFi-based indoor localization using Channel State Information (CSI) with federated learning capabilities. The system processes angle-of-arrival (AoA) and time-of-flight (ToF) features from multiple access points to predict device locations.
+Open-Sourced Codebase for PriWiLoc: Private, Accurate, and Robust Wi-Fi Indoor Localization
 
 ## Project Structure
 
@@ -54,15 +54,16 @@ A PyTorch Lightning-based deep learning framework for WiFi-based indoor localiza
 Create a virtual environment and install the required packages:
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install PyTorch (adjust for your CUDA version)
-pip install torch torchvision torchaudio
-
-# Install other dependencies
-pip install pytorch-lightning hydra-core omegaconf h5py pandas numpy scipy matplotlib python-dotenv torchmetrics
+conda create --name priwiloc_env --file requirements.txt
+conda activate priwiloc_env 
 ```
+
+Some dependencies need to be installed with pip:
+```bash
+pip install hydra-core --upgrade
+```
+
+Our dependencies do not take into account Pytorch-CUDA support since that is very GPU and CUDA version dependent. Please make sure to install the correct pytorch cuda packages for your GPU. 
 
 ### Optional Dependencies
 
@@ -77,6 +78,11 @@ If you need to process raw CSI data, you'll need MATLAB with:
 - Signal Processing Toolbox
 - HDF5 support
 
+## Accessing Datasets
+To access the datasets found in the DLoc paper, use the following [form](https://docs.google.com/forms/d/e/1FAIpQLSfd6BoBSUzYkkza4-Rk4oiSmEdOvnlaWJuQfaeWf5GLO2-hbg/viewform) to get a link to the datasets in your email.
+
+To access the datasets found in the RLoc paper, you can use this github [link](https://github.com/H-WILD/human_held_device_wifi_indoor_localization_dataset) to download the channels and use our MATLAB code for processing. **NOTE: These datasets have angles that go past +- 90 degrees, we advise to not use these points since these become ambiguous when localizing using AoA-ToF maps compared to XY-heatmaps.**
+
 ## Getting Started
 
 ### 1. Prepare Your Dataset
@@ -90,6 +96,7 @@ If you have preprocessed HDF5 files with AoA-ToF features, skip to step 2.
 1. Navigate to `wifi_data_processing/`
 2. Follow instructions in `wifi_data_processing/README.md`
 3. Run MATLAB scripts to generate HDF5 feature files
+4. You can use `create_train_test_split.py` to create train.csv and test.csv files 
 
 ### 2. Configure Dataset Paths
 
@@ -113,6 +120,8 @@ dataset:
 ```
 
 **Note**: The CSV files should contain paths to HDF5 files, one per line.
+
+**Note 2**: You can use the same .CSV path for validation and testing
 
 ### 3. Configure Training Settings
 
@@ -268,35 +277,12 @@ COMET_PROJECT_NAME=your_project
 - Use `strategy: "ddp_find_unused_parameters_true"` for federated learning
 - Ensure all GPUs are visible: `export CUDA_VISIBLE_DEVICES=0,1`
 
-### Slow Training
-- Increase `dataset.num_workers` (typically 4-8 per GPU)
-- Increase `dataset.prefetch_factor` (default: 2)
-- Enable `persistent_workers` in DataLoader (already enabled for training)
-
-## Testing
-
-Run unit tests:
-
-```bash
-# Test geometry utilities
-python utils/tests/geometry_utils_test.py
-
-# Test ray intersection solver
-python utils/tests/ray_intersection_solver_test.py
-
-# Test schema definitions
-python utils/tests/schema_test.py
-```
 
 ## Citation
 
 If you use this code, please cite the relevant paper (add citation here when available).
 
-## License
-
-(Add license information here)
-
 ## Contact
 
-(Add contact information here)
+Lead Researchers: Kanishka Roy (kroy02@g.ucla.edu), Tahsin Fuad Hasan (tahsinfu@buffalo.edu)
 

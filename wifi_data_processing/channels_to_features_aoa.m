@@ -1,8 +1,8 @@
 clearvars
 addpath("utils/")
 % FILL OUT THE PATH TO SAVE THE DATA 
-DATA_SAVE_TOP = "/home/csgrad/tahsinfu/Dloc/data/Data_Aug16_1";
-CHANNELS_LOCATION = "/home/csgrad/tahsinfu/Data/channels_release";
+DATA_SAVE_TOP = ""; % location to save the data
+CHANNELS_LOCATION = ""; % location to the channels data
 data_names = {'July16','July18','July18_different_APsHeight','July22_1_ref','July22_2_ref','jacobs_July28','jacobs_July28_2','jacobs_Aug16_1','jacobs_Aug16_2','jacobs_Aug16_3','jacobs_Aug16_4_ref','jacobs_aug28_2'};% Iterate Through and Save
 for dataset_number = [8]
     clearvars -EXCEPT dataset_number DATA_SAVE_TOP data_names CHANNELS_LOCATION

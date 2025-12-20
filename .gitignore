@@ -11,3 +11,4 @@ outputs/
 
 .DS_Store
 
+.env

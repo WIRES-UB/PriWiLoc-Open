@@ -4,8 +4,7 @@ clc; clear all;
 %% Set Dataset
 % dataset = "jacobs_July28_2";
 dataset = "July16";
-% data_path = "C:\Users\kanis\DLoc_datasets\";
-data_path = "/home/csgrad/tahsinfu/Dloc/data/DLocData/";
+data_path = ""; % location to the data
 
 %% Create output folder for plots
 if ~exist("plotss", "dir")
