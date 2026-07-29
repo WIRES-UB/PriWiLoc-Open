@@ -365,14 +365,42 @@ class DLocBatchDataSample(DLocDataSample):
             aoa_label=self.aoa_label[support_indices],
             location_label=self.location_label[support_indices],
             velocity=self.velocity[support_indices],
-            timestamps=self.timestamps[support_indices]
+            timestamps=self.timestamps[support_indices],
+            ap_metadata=(
+                self.ap_metadata[support_indices]
+                if isinstance(self.ap_metadata, torch.Tensor)
+                and self.ap_metadata.ndim > 0
+                and self.ap_metadata.shape[0] == batch_size
+                else self.ap_metadata
+            ),
+            rssi=(
+                self.rssi[support_indices]
+                if isinstance(self.rssi, torch.Tensor)
+                and self.rssi.ndim > 0
+                and self.rssi.shape[0] == batch_size
+                else self.rssi
+            ),
         )
         query_set = self.__class__(
             features_2d=self.features_2d[query_indices],
             aoa_label=self.aoa_label[query_indices],
             location_label=self.location_label[query_indices],
             velocity=self.velocity[query_indices],
-            timestamps=self.timestamps[query_indices]
+            timestamps=self.timestamps[query_indices],
+            ap_metadata=(
+                self.ap_metadata[query_indices]
+                if isinstance(self.ap_metadata, torch.Tensor)
+                and self.ap_metadata.ndim > 0
+                and self.ap_metadata.shape[0] == batch_size
+                else self.ap_metadata
+            ),
+            rssi=(
+                self.rssi[query_indices]
+                if isinstance(self.rssi, torch.Tensor)
+                and self.rssi.ndim > 0
+                and self.rssi.shape[0] == batch_size
+                else self.rssi
+            ),
         )
         return support_set, query_set
 
@@ -454,13 +482,41 @@ class DLocBatchSequenceDataSample(DLocDataSample):
             aoa_label=self.aoa_label[support_indices],
             location_label=self.location_label[support_indices],
             velocity=self.velocity[support_indices],
-            timestamps=self.timestamps[support_indices]
+            timestamps=self.timestamps[support_indices],
+            ap_metadata=(
+                self.ap_metadata[support_indices]
+                if isinstance(self.ap_metadata, torch.Tensor)
+                and self.ap_metadata.ndim > 0
+                and self.ap_metadata.shape[0] == batch_size
+                else self.ap_metadata
+            ),
+            rssi=(
+                self.rssi[support_indices]
+                if isinstance(self.rssi, torch.Tensor)
+                and self.rssi.ndim > 0
+                and self.rssi.shape[0] == batch_size
+                else self.rssi
+            ),
         )
         query_set = self.__class__(
             features_2d=self.features_2d[query_indices],
             aoa_label=self.aoa_label[query_indices],
             location_label=self.location_label[query_indices],
             velocity=self.velocity[query_indices],
-            timestamps=self.timestamps[query_indices]
+            timestamps=self.timestamps[query_indices],
+            ap_metadata=(
+                self.ap_metadata[query_indices]
+                if isinstance(self.ap_metadata, torch.Tensor)
+                and self.ap_metadata.ndim > 0
+                and self.ap_metadata.shape[0] == batch_size
+                else self.ap_metadata
+            ),
+            rssi=(
+                self.rssi[query_indices]
+                if isinstance(self.rssi, torch.Tensor)
+                and self.rssi.ndim > 0
+                and self.rssi.shape[0] == batch_size
+                else self.rssi
+            ),
         )
         return support_set, query_set
