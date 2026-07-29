@@ -20,9 +20,20 @@ from utils.plot_utils import (
     plot_location_error_cdf,
 )
 from utils.schema import AoAVisualizationSample
+from utils.experiment_logging import (
+    log_asset as log_experiment_asset,
+    log_figure_and_close,
+)
 
 
 class AoAVisualizationCallback(Callback):
+    """Log localization metrics and retained AoA visualization samples.
+
+    Args:
+        display_viz_data_epoch_interval: Epochs between visualization runs.
+        max_visualization_samples: Maximum validation samples retained per run.
+    """
+
     def __init__(
         self,
         display_viz_data_epoch_interval: int = 5,
@@ -32,9 +43,11 @@ class AoAVisualizationCallback(Callback):
         Callback for AoA visualization during validation.
 
         Args:
-            ap_metadata: Metadata containing AP locations and orientations.
             display_viz_data_epoch_interval: Interval (in epochs) to display visualization data.
             max_visualization_samples: Maximum number of samples to visualize per epoch.
+
+        Returns:
+            None.
         """
         super().__init__()
         self.display_viz_data_epoch_interval = display_viz_data_epoch_interval
@@ -49,18 +62,11 @@ class AoAVisualizationCallback(Callback):
             logger: PyTorch Lightning logger instance.
             figure_name: Name for the figure.
             figure: Matplotlib figure object.
+
+        Returns:
+            None.
         """
-        if logger is None:
-            return
-        
-        if isinstance(logger, CometLogger):
-            logger.experiment.log_figure(figure_name=figure_name, figure=figure)
-        elif isinstance(logger, TensorBoardLogger):
-            logger.experiment.add_figure(figure_name, figure)
-        elif isinstance(logger, WandbLogger):
-            import wandb
-            logger.experiment.log({figure_name: wandb.Image(figure)})
-        # CSV logger doesn't support figures, skip silently
+        log_figure_and_close(logger, figure_name, figure)
     
     @staticmethod
     def _log_asset(logger: Optional[pl.loggers.Logger], file_path: str, overwrite: bool = True) -> None:
@@ -70,15 +76,11 @@ class AoAVisualizationCallback(Callback):
             logger: PyTorch Lightning logger instance.
             file_path: Path to the file to log.
             overwrite: Whether to overwrite existing file.
+
+        Returns:
+            None.
         """
-        if logger is None:
-            return
-        
-        if isinstance(logger, CometLogger):
-            logger.experiment.log_asset(file_path, overwrite=overwrite)
-        elif isinstance(logger, WandbLogger):
-            logger.experiment.save(file_path)
-        # Other loggers don't support asset logging
+        log_experiment_asset(logger, file_path, overwrite=overwrite)
     
     @staticmethod
     def _get_experiment_name(logger: Optional[pl.loggers.Logger]) -> str:
@@ -109,9 +111,11 @@ class AoAVisualizationCallback(Callback):
         Args:
             trainer: PyTorch Lightning Trainer instance.
             pl_module: The LightningModule being trained.
-            metric: The metric to visualize, typically from pl_module.val_metrics or pl_module.test_metrics.
             stage: "val" or "test" to indicate the phase of the metrics.
             save_metrics: Whether to save metrics to a .npy file.
+
+        Returns:
+            None.
         """
         if stage == "train":
             metric_result = pl_module.train_metrics.compute()
@@ -215,6 +219,9 @@ class AoAVisualizationCallback(Callback):
             batch: The current batch of data.
             batch_idx: The index of the current batch.
             dataloader_idx: Index of the dataloader (default is 0).
+
+        Returns:
+            None.
         """
         if len(self.val_visualization_data) < self.max_visualization_samples:
             # import ipdb; ipdb.set_trace()
@@ -246,6 +253,9 @@ class AoAVisualizationCallback(Callback):
         Args:
             trainer: PyTorch Lightning Trainer instance.
             pl_module: The LightningModule being trained.
+
+        Returns:
+            None.
         """
         # Log visualizations every `display_viz_data_epoch_interval` epochs
         if trainer.current_epoch % self.display_viz_data_epoch_interval == 0:
@@ -265,9 +275,31 @@ class AoAVisualizationCallback(Callback):
                 sample_index += 1
 
     def on_train_epoch_end(self, trainer: Trainer, pl_module: pl.LightningModule) -> None:
+        """Log training metric visualizations at the configured interval.
+
+        Args:
+            trainer: Active Lightning trainer.
+            pl_module: Active Lightning module.
+
+        Returns:
+            None.
+        """
         # Log visualizations every `display_viz_data_epoch_interval` epochs
         if trainer.current_epoch % self.display_viz_data_epoch_interval == 0:
             self._plot_metric_visualization(trainer, pl_module, "train")
 
     def on_test_epoch_end(self, trainer: Trainer, pl_module: pl.LightningModule) -> None:
+        """Log legacy test visualizations when isolated reporting is inactive.
+
+        Args:
+            trainer: Active Lightning trainer.
+            pl_module: Active Lightning module.
+
+        Returns:
+            None.
+        """
+        if hasattr(pl_module, "test_metrics_per_ds"):
+            # Secure-pipeline test reporting is isolated by dataloader and is
+            # owned by TrigAOAResNetModel.on_test_epoch_end.
+            return None
         self._plot_metric_visualization(trainer, pl_module, "test", save_metrics=True)
