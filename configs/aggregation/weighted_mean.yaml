@@ -1,0 +1,8 @@
+# @package _global_
+aggregation:
+  _target_: models.aggregation.strategies.WeightedMeanAggregation
+  buffer_policy: reference_client
+  reference_client_id: 0
+  weight_source: sample_count
+  # Optional fixed public sample-count or AP-reliability weights.
+  client_weights: null

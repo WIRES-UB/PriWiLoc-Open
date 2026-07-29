@@ -1,0 +1,24 @@
+# Secure-aggregation and cross-dataset evaluation configuration.
+
+defaults:
+  - dataset: secagg
+  - model: secagg
+  - aggregation: uniform_mean
+  - secure_agg: default
+  - eval: default
+  - trainer: secagg
+  - logger: comet
+  - _self_
+
+experiment:
+  name: "priwiloc_secagg_experiment"
+  seed: 42
+  max_epochs: 25
+  learning_rate: 5e-5
+
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}

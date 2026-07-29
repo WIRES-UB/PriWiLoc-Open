@@ -1,0 +1,23 @@
+# @package _global_
+trainer:
+  accelerator: "gpu"
+  devices: 1
+  strategy: "auto"
+  log_every_n_steps: 50
+  resume_checkpoint_path: null
+
+  checkpoint:
+    monitor: "val_loss"
+    mode: "min"
+    save_top_k: 1
+    filename: "best-{epoch:02d}-{val_loss:.3f}"
+
+  early_stopping:
+    monitor: "val_loss"
+    patience: 25
+    verbose: true
+    mode: "min"
+
+  visualization:
+    max_visualization_samples: 500
+    display_viz_data_epoch_interval: 1

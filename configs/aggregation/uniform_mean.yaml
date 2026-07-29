@@ -1,0 +1,5 @@
+# @package _global_
+aggregation:
+  _target_: models.aggregation.strategies.UniformMeanAggregation
+  buffer_policy: reference_client
+  reference_client_id: 0

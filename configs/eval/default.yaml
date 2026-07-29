@@ -1,0 +1,10 @@
+# @package _global_
+eval:
+  percentiles: [50, 90, 99]
+  save_raw_errors: true
+  raw_error_format: "csv"
+  cdf:
+    enabled: true
+    overlay_all_datasets: true
+    max_points: 20000
+  output_dir: "eval_outputs"

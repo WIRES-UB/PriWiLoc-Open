@@ -1,0 +1,6 @@
+# @package _global_
+model:
+  name: "SecureFederatedLearningModel"
+  average_weight_every_n_batches: 10
+  dropout: 0.2
+  in_channels: 1
