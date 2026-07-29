@@ -8,7 +8,12 @@ lightning_logs/
 
 # Output directories
 outputs/
+eval_outputs/
 
 .DS_Store
 
+.venv
 .env
+
+# helper files
+clean.py
