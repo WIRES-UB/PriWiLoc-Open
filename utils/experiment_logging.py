@@ -5,6 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Mapping
 
+import matplotlib
+
+matplotlib.use("Agg", force=True)
+
 
 def log_figure(
     logger,

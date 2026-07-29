@@ -7,6 +7,9 @@ import uuid
 from dataclasses import asdict
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg", force=True)
 import matplotlib.pyplot as plt
 from pytorch_lightning.callbacks import Callback
 

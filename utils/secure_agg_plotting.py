@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 
+import matplotlib
+
+matplotlib.use("Agg", force=True)
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 

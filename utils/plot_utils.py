@@ -1,5 +1,9 @@
 """Utility functions for plotting data."""
 from typing import Union, Optional
+
+import matplotlib
+
+matplotlib.use("Agg", force=True)
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
