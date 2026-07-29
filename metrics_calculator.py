@@ -1,13 +1,14 @@
 """Implement various metrics calculators for evaluating the performance of the model.
 """
 from torchmetrics import Metric
+import numpy as np
 import torch
 from utils.schema import ModelOutput, GTlabel
 from utils.geometry_utils import wrap_to_pi
 from typing import Dict
 
 class MetricNames:
-    """Class to store all metrics that metrics calculator generates."""
+    """Provide stable keys for model metric outputs."""
     AOA_ERROR_MEAN_RADIAN = "aoa_error_mean_radian"
     AOA_ERROR_STD_RADIAN = "aoa_error_std_radian"
     AOA_ERROR_RMSE_RADIAN = "aoa_error_mse_radian"
@@ -28,8 +29,12 @@ class MetricNames:
 
 
 class AoAAccuracy(Metric):
-    """This class computes mean and standard deviation of AoA error.
-    The error is defined as difference between predicted AoA and the ground truth AoA. Unit is all in radians.
+    """This class computes mean and standard deviation of AoA error. The error is defined 
+    as difference between predicted AoA and the ground truth AoA. Unit is all in radians.
+
+    Args:
+        n_aps: Number of access points.
+        **kwargs: Additional TorchMetrics configuration.
 
     Reference: https://lightning.ai/docs/torchmetrics/stable/pages/implement.html
     """
@@ -38,6 +43,10 @@ class AoAAccuracy(Metric):
 
         Args:
             n_aps: number of APs.
+            **kwargs: Additional TorchMetrics configuration.
+
+        Returns:
+            None.
         """
         super().__init__(**kwargs)
         self.add_state("sum_aoa_error", default=torch.zeros(n_aps), dist_reduce_fx="sum")
@@ -48,15 +57,26 @@ class AoAAccuracy(Metric):
         self.add_state("aoa_error_all", default=[])
 
     def update(self, pred: ModelOutput, target: GTlabel) -> None:
+        """Calculate wrapped AoA errors and source predictions.
+
+        Args:
+            pred: Model predictions.
+            target: Ground-truth labels.
+
+        Returns:
+            None.
+        """
         # Calculate the difference between prediction and ground truth
         # pred and target aoa shape is (batch_size, n_aps)
         assert pred.aoa.shape == target.aoa.shape
-        if pred.aoa.dim() == 3: # batch x seq x n_aps
-            pred.aoa = pred.aoa[:, -1, :]
-            target.aoa = target.aoa[:, -1, :]
-            
-        aoa_diff_radian = wrap_to_pi(pred.aoa - target.aoa)
-        n_sample = pred.aoa.shape[0]
+        pred_aoa = pred.aoa
+        target_aoa = target.aoa
+        if pred_aoa.dim() == 3: # batch x seq x n_aps
+            pred_aoa = pred_aoa[:, -1, :]
+            target_aoa = target_aoa[:, -1, :]
+
+        aoa_diff_radian = wrap_to_pi(pred_aoa - target_aoa)
+        n_sample = pred_aoa.shape[0]
 
         # Update the states
         self.sum_aoa_error += aoa_diff_radian.sum(dim=0)
@@ -64,16 +84,15 @@ class AoAAccuracy(Metric):
         self.total += n_sample
 
         # accumulate prediction and target aoa
-        self.preds.append(pred.aoa)
-        self.targets.append(target.aoa)
+        self.preds.append(pred_aoa)
+        self.targets.append(target_aoa)
         self.aoa_error_all.append(aoa_diff_radian)
 
     def compute(self) -> Dict[str, torch.Tensor]:
-        """Compute mean and standard deviation of AoA error.
+        """Compute aggregate AoA error statistics and raw arrays.
 
         Returns:
-            A dictionary containing mean and standard deviation of AoA error in radian.
-            the shape of mean is (n_aps,) and the shape of std is (n_aps,)
+            AoA statistics, predictions, targets, and per-sample errors.
         """
         # Compute the mean AoA error
         aoa_error_mean = self.sum_aoa_error / self.total
@@ -96,6 +115,14 @@ class RSSIMetric(Metric):
     """This class accumulates RSSI values across batches."""
     
     def __init__(self, **kwargs):
+        """Initialize an empty RSSI accumulation state.
+
+        Args:
+            **kwargs: Additional TorchMetrics configuration.
+
+        Returns:
+            None.
+        """
         super().__init__(**kwargs)
         self.add_state("rssi_values", default=[])
 
@@ -109,6 +136,9 @@ class RSSIMetric(Metric):
         Args:
             pred: Model predictions (unused)
             target: Ground truth labels (unused)
+
+        Returns:
+            None.
         """
         # Do nothing here - RSSI will be set via set_rssi()
         pass
@@ -118,14 +148,17 @@ class RSSIMetric(Metric):
         
         Args:
             rssi: RSSI tensor of shape (batch_size, n_aps)
+
+        Returns:
+            None.
         """
         self.rssi_values.append(rssi)
 
     def compute(self) -> Dict[str, torch.Tensor]:
-        """Compute and return accumulated RSSI values.
-        
+        """Return accumulated RSSI values.
+
         Returns:
-            A dictionary containing all RSSI values concatenated.
+            A dictionary containing concatenated RSSI tensors.
         """
         if len(self.rssi_values) == 0:
             return {MetricNames.RSSI_ALL: torch.tensor([])}
@@ -134,7 +167,17 @@ class RSSIMetric(Metric):
         return {MetricNames.RSSI_ALL: rssi_tensor}
     
 class LocationAccuracy(Metric):
+    """Calculate location predictions and compute distance-error statistics."""
+
     def __init__(self, **kwargs):
+        """Initialize empty location and metadata accumulation states.
+
+        Args:
+            **kwargs: Additional TorchMetrics configuration.
+
+        Returns:
+            None.
+        """
         super().__init__(**kwargs)
         self.add_state("preds", default=[])
         self.add_state("targets", default=[])
@@ -142,24 +185,36 @@ class LocationAccuracy(Metric):
         self.add_state("timestamps", default=[])
 
     def update(self, pred: ModelOutput, target: GTlabel) -> None:
-        # accumulate prediction and target location
-        if pred.location.dim() == 3: # batch x seq x 2
-            pred.location = pred.location[:, -1, :]
-            target.location = target.location[:, -1, :]
-            target.velocity = target.velocity[:, -1, :]
-            target.timestamps = target.timestamps[:, -1, :]
+        """Calculate final-step locations, velocity, and timestamps.
 
-        self.preds.append(pred.location)
-        self.targets.append(target.location)
-        self.velocity.append(target.velocity)
-        self.timestamps.append(target.timestamps)
-
-    def compute(self) -> Dict:
-        """Compute mean, median, standard deviation, 90th percentile, and 99th percentile of location error.
+        Args:
+            pred: Model predictions.
+            target: Ground-truth labels.
 
         Returns:
-            A dictionary containing the computed metrics. Also return the prediction and target tensors for
-            plotting purpose.
+            None.
+        """
+        # accumulate prediction and target location
+        pred_location = pred.location
+        target_location = target.location
+        target_velocity = target.velocity
+        target_timestamps = target.timestamps
+        if pred_location.dim() == 3: # batch x seq x 2
+            pred_location = pred_location[:, -1, :]
+            target_location = target_location[:, -1, :]
+            target_velocity = target_velocity[:, -1, :]
+            target_timestamps = target_timestamps[:, -1, :]
+
+        self.preds.append(pred_location)
+        self.targets.append(target_location)
+        self.velocity.append(target_velocity)
+        self.timestamps.append(target_timestamps)
+
+    def compute(self) -> Dict:
+        """Compute location-error statistics and return raw accumulated values.
+
+        Returns:
+            Location statistics, errors, predictions, targets, and metadata.
         """
         preds_tensor = torch.cat(self.preds, dim=0) # shape: (n_samples, 2)
         targets_tensor = torch.cat(self.targets, dim=0) # shape: (n_samples, 2)
@@ -167,8 +222,17 @@ class LocationAccuracy(Metric):
         mean_error = errors.mean()
         median_error = errors.median()
         std_error = errors.std()
-        percentile_90_error = torch.quantile(errors, 0.90)
-        percentile_99_error = torch.quantile(errors, 0.99)
+        # `torch.quantile()` has a hard limit of 16.7 million elements
+        if errors.numel() > 16_700_000:
+            percentile_values = np.percentile(
+                errors.detach().cpu().numpy(),
+                [90, 99],
+            )
+            percentile_90_error = errors.new_tensor(percentile_values[0])
+            percentile_99_error = errors.new_tensor(percentile_values[1])
+        else:
+            percentile_90_error = torch.quantile(errors, 0.90)
+            percentile_99_error = torch.quantile(errors, 0.99)
 
         velocity_tensor = torch.cat(self.velocity, dim=0)
         timestamps_tensor = torch.cat(self.timestamps, dim=0)
