@@ -137,7 +137,7 @@ class DLocDataModule(LightningDataModule):
             dataset_type: Lifecycle stage assigned to the dataset.
 
         Returns:
-            A dataset instance, or ``None`` when no path was supplied.
+            A dataset instance, or `None` when no path was supplied.
         """
         if not data_paths:
             return None

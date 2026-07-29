@@ -17,7 +17,7 @@ def log_figure(
     """Log a Matplotlib figure through a supported experiment backend.
 
     Args:
-        logger: Lightning logger or ``None``.
+        logger: Lightning logger or `None`.
         figure_name: Display name for the figure.
         figure: Matplotlib figure to log.
         step: Optional training step associated with the figure.
@@ -59,7 +59,7 @@ def log_figure_and_close(
     """Log a figure and always release its Matplotlib resources.
 
     Args:
-        logger: Lightning logger or ``None``.
+        logger: Lightning logger or `None`.
         figure_name: Display name for the figure.
         figure: Matplotlib figure to log and close.
         step: Optional training step associated with the figure.
@@ -93,7 +93,7 @@ def log_asset(
     """Log a file asset through a supported experiment backend.
 
     Args:
-        logger: Lightning logger or ``None``.
+        logger: Lightning logger or `None`.
         path: Local asset path.
         metadata: Optional metadata attached to the asset.
         overwrite: Whether a same-named remote asset may be replaced.

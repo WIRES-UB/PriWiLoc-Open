@@ -1,6 +1,7 @@
 """Factory for creating different types of loggers for PyTorch Lightning."""
 
 import os
+from collections.abc import Iterable
 from typing import Optional, Union
 from omegaconf import DictConfig
 import pytorch_lightning as pl
@@ -149,6 +150,9 @@ class LoggerFactory:
         Args:
             logger: PyTorch Lightning logger instance.
             cfg: Hydra configuration object containing hyperparameters.
+
+        Returns:
+            None.
         """
         if logger is None:
             return
@@ -169,9 +173,9 @@ class LoggerFactory:
     @staticmethod
     def log_dataset_files(
         logger: Optional[pl.loggers.Logger],
-        train_path: str,
-        val_path: str,
-        test_path: str,
+        train_path,
+        val_path,
+        test_path,
     ) -> None:
         """Log dataset CSV files to the logger (if supported).
 
@@ -180,21 +184,36 @@ class LoggerFactory:
             train_path: Path to training data CSV.
             val_path: Path to validation data CSV.
             test_path: Path to test data CSV.
+
+        Returns:
+            None.
         """
         if logger is None:
             return
 
-        # Only Comet and WandB support file logging
+        paths = []
+        for stage, candidate in (
+            ("train", train_path),
+            ("val", val_path),
+            ("test", test_path),
+        ):
+            candidates = (
+                candidate
+                if isinstance(candidate, Iterable) and not isinstance(candidate, (str, bytes))
+                else [candidate]
+            )
+            for path in candidates:
+                if path and os.path.isfile(path):
+                    paths.append((stage, path))
+
+        # Only Comet and WandB support file logging.
         if isinstance(logger, CometLogger):
-            logger.experiment.log_asset(train_path, metadata={"stage": "train"})
-            logger.experiment.log_asset(val_path, metadata={"stage": "val"})
-            logger.experiment.log_asset(test_path, metadata={"stage": "test"})
+            for stage, path in paths:
+                logger.experiment.log_asset(path, metadata={"stage": stage})
 
         elif isinstance(logger, WandbLogger):
-            import wandb
-            logger.experiment.save(train_path)
-            logger.experiment.save(val_path)
-            logger.experiment.save(test_path)
+            for _, path in paths:
+                logger.experiment.save(path)
 
     @staticmethod
     def log_model_checkpoint(
@@ -208,6 +227,9 @@ class LoggerFactory:
             logger: PyTorch Lightning logger instance.
             checkpoint_path: Path to the model checkpoint.
             model_name: Name for the model.
+
+        Returns:
+            None.
         """
         if logger is None:
             return

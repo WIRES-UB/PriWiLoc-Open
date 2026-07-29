@@ -126,7 +126,7 @@ def save_dataset_assets(
         errors: Per-sample location errors.
         predictions: Model location predictions.
         targets: Ground-truth locations.
-        raw_error_format: Error format: ``npy``, ``csv``, or ``both``.
+        raw_error_format: Error format: `npy`, `csv`, or `both`.
 
     Returns:
         Paths of all written artifact files.

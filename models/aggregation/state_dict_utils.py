@@ -22,7 +22,7 @@ def is_batch_norm_buffer(key: str) -> bool:
         key: Model state-dictionary key.
 
     Returns:
-        ``True`` when the key identifies an excluded BatchNorm buffer.
+        `True` when the key identifies an excluded BatchNorm buffer.
     """
 
     return key.rsplit(".", 1)[-1] in BATCH_NORM_BUFFERS
@@ -36,7 +36,7 @@ def is_aggregatable_tensor(key: str, tensor: torch.Tensor) -> bool:
         tensor: Tensor stored under the key.
 
     Returns:
-        ``True`` for floating non-BatchNorm tensors.
+        `True` for floating non-BatchNorm tensors.
     """
 
     return tensor.is_floating_point() and not is_batch_norm_buffer(key)
