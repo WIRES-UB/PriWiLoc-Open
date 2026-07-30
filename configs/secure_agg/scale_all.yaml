@@ -1,0 +1,23 @@
+# @package _global_
+secure_agg:
+  enabled: true
+  frac_bits: 20
+  modulus_bits: 61
+  k: 2
+  master_seed: 1234
+
+  server:
+    attacks:
+      - name: scaling
+        _target_: models.secure_agg.attacks.ScalingAttack
+        ap_selector: all
+        rounds: all
+        parameter_selector:
+          mode: all
+        factor: 2.0
+
+  callback:
+    output_dir: secure_audit
+    plot_interval_epochs: 1
+    export_interval_epochs: 1
+    max_pending_events: 10000

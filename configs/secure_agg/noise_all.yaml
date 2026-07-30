@@ -1,0 +1,25 @@
+# @package _global_
+secure_agg:
+  enabled: true
+  frac_bits: 20
+  modulus_bits: 61
+  k: 2
+  master_seed: 1234
+
+  server:
+    attacks:
+      - name: additive_noise
+        _target_: models.secure_agg.attacks.AdditiveNoiseAttack
+        ap_selector: all
+        rounds: all
+        parameter_selector:
+          mode: all
+        distribution: normal
+        magnitude: 1.0e-2
+        seed_offset: 100
+
+  callback:
+    output_dir: secure_audit
+    plot_interval_epochs: 1
+    export_interval_epochs: 1
+    max_pending_events: 10000
